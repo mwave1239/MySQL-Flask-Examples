@@ -44,4 +44,8 @@ def delete():
     mysql.query_db(query, data)
     return redirect('/success')
 
+@app.route('/return', methods=['POST'])
+def return_to():
+    return redirect('/')
+
 app.run(debug=True)
