@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Full Friends</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="errors">
+                {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %}
+                <ul class=flashes>
+                    {% for category, message in messages %}
+                    <li class="{{ category }}" color='red'>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %} {% endwith %}
+                <div class="col-md-8 text-center">
+                    <form class="full_friend" action="/friends" method="POST">
+                        Email address: <input type="text" name="email" />
+                        First Name: <input type="text" name="first_name" />
+                        Last Name: <input type="text" name="last_name"  />
+                        <input type="submit" class="btn btn-success" />
+                    </form>
+                </div>
+                <div class="row">
+                        <div class="col-md-8 text-center">
+                            <h1>Friends Entered:</h1>
+                            <table style="width:100%" class="table table-bordered text-left">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Email Address</th>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Created At</th>
+                                        <th>Updated At</th>
+                                        <th>Edit</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for full_friends in friends %}
+                                        <tr>
+                                            <td>{{full_friends.id}}</td>
+                                            <td>{{full_friends.email}}</td>
+                                            <td>{{full_friends.first_name}}</td>
+                                            <td>{{full_friends.last_name}}</td>
+                                            <td>{{full_friends.created_at}}</td>
+                                            <td>{{full_friends.updated_at}}</td>
+                                            <td><a href="/user/{{full_friends.id}}/edit"><button class="btn btn-warning">Edit</button></a></td>
+                                            <td>
+                                              <form class="destroy" action="/user/{{full_friends.id}}/delete" method="POST">
+                                                <input type="submit" class="btn btn-danger" value="Delete"/></form>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+            </div>
+        </div>
+
+
+    </div>
+
+</body>
+
+</html>
