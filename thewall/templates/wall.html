@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>The Wall</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6 text-left">
+                <h3>Coding Dojo Wall</h3></div>
+            <div class="col-md-6 text-right">
+                Welcome {{session['email']}}
+                <a href="/logoff">
+                    <button class="btn btn-primary">Log Off</button>
+                </a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10 text-left">
+                <h3>Post a new message:</h3>
+                <form class="message_insert" action="/insert/message" method="POST">
+                    <textarea rows="4" cols="50" name="message"></textarea>
+                    <input type="submit" class="btn btn-primary" />
+                </form>
+                {% for messages in messages %}
+                <div class="col-md-10 text-center">
+                <table style="width:100%" class="table table-bordered text-left">
+                    <thead>
+                        <tr>
+                            <th>Message Date</th>
+                            <th>Message Content</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>Message date {{messages.created_at}} {{messages.first_name}} {{messages.last_name}}</th>
+                            <th>{{messages.message}}</th>
+                        </tr>
+                        {% set x = 0 %}
+                            {% for comments in comments %}
+                                {% if comments['id'] != x %}
+                            <tr>
+                                <th>Message date {{comments.created_at}} {{comments.first_name}} {{comments.last_name}}</th>
+                                <th>{{comments.comment}}</th>
+                            </tr>
+                            {% endif %} {% endfor %} {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+</body>
+
+</html>

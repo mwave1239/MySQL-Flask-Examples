@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>The Wall</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6 text-left">
+                <h3>Coding Dojo Wall</h3></div>
+            {% for users in user %}
+            <div class="col-md-6 text-right">
+                Welcome {{session['user.first_name']}}
+                <a href="/logoff">
+                    <button class="btn btn-primary">Log Off</button>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="row">
+            <div class="col-md-8 text-left">
+
+                <div class="errors">
+                    {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %}
+                    <ul class=flashes>
+                        {% for category, message in messages %}
+                        <li class="{{ category }}" color='red'>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %} {% endwith %}
+                    <div class="col-md-12 text-center">
+                        <h1>Welcome to the Wall App!</h1>
+                        <h3>If you've been here before, please login. Otherwise, please create a new user!</h3>
+                        <a href="/login">
+                            <button class="btn btn-primary">Login</button>
+                        </a>
+                        <a href="/create">
+                            <button class="btn btn-primary">Create</button>
+                        </a>
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    </div>
+    </div>
+
+
+</body>
+
+</html>
