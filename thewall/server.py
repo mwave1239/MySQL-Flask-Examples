@@ -79,6 +79,7 @@ def loginuser():
 def login():
     email = request.form['email_login']
     password = request.form['password_check']
+    user_id = session['user_id']
     login_query = "SELECT * FROM users WHERE email = :email LIMIT 1"
     login_data = { 'email': email }
     user = mysql.query_db(login_query, login_data)
@@ -87,11 +88,11 @@ def login():
         return redirect('/login')
     else:
         if bcrypt.check_password_hash(user[0]['password'], password):
-            session['user_id'] = user[0]['id']
+            session['user_id'] = user[0]['userid']
             session['first_name'] = user[0]['first_name']
             session['last_name'] = user[0]['last_name']
             session['email'] = user[0]['email']
-            return redirect('/wall', )
+            return redirect('/wall')
         else:
             flash("No combination of that user name and password exists", "red")
             return redirect('/login')
@@ -112,7 +113,21 @@ def logoff():
 
 @app.route('/wall')
 def wall():
-    return render_template('wall.html', messages = get_messages_by_user(), comments = get_comments_by_user())
+    user_id = session['user_id']
+    query = "SELECT * FROM users"
+    users = mysql.query_db(query)
+    return render_template('wall.html', messages = get_messages_by_user(), comments = get_comments_by_user(), user_id = session['user_id'], users=users)
+
+@app.route('/wall/<user_id>')
+def wall_for_others(user_id):
+    friend_id = user_id
+    get_messages = "SELECT messages.messageid, messages.message, messages.created_at, users.userid, users.first_name, users.last_name FROM messages LEFT JOIN users on messages.user_id = users.userid WHERE messages.user_id = {} ORDER BY messages.created_at DESC".format(friend_id)
+    get_messages_data = {
+        'users.id': user_id
+    }
+    get_comments = "SELECT comments.comment, comments.message_id, messages.messageid, comments.created_at, users.userid, users.first_name, users.last_name FROM comments LEFT JOIN messages on comments.message_id = messages.messageid LEFT JOIN users on users.userid = comments.users_userid WHERE messages.messageid = comments.message_id ORDER BY comments.created_at ASC"
+    query = "SELECT * FROM users"
+    return render_template('wall.html', messages = mysql.query_db(get_messages, get_messages_data), comments = mysql.query_db(get_comments), users = mysql.query_db(query), user_id = friend_id)
 
 @app.route('/insert/message', methods=['POST'])
 def insert_message():
@@ -126,9 +141,31 @@ def insert_message():
     mysql.query_db(message_insert, message_data)
     return redirect('/wall')
 
+@app.route('/insert/comment/<messageid>', methods=['POST'])
+def showcommentedit(messageid):
+    comment = request.form['comment']
+    message = request.form['message_id']
+    user_id = session['user_id']
+    comment_insert = "INSERT INTO comments (comment, created_at, updated_at, users_userid, message_id) VALUES(:comment, NOW(), NOW(), :users_userid, :messages_id)"
+    comment_data = {
+        'comment': comment,
+        'users_userid': user_id,
+        'messages_id': message
+    }
+    mysql.query_db(comment_insert, comment_data)
+    return redirect('/wall')
+
+@app.route('/delete/message/<messageid>')
+def delete_comment(messageid):
+    return render_template('delete.html', messageid=messageid)
+
+# @app.route('/delete')
+# def delete():
+
+
 def get_messages_by_user():
     user_id = session['user_id']
-    get_messages = "SELECT messages.id, messages.message, messages.created_at, users.id, users.first_name, users.last_name FROM messages LEFT JOIN users on messages.user_id = users.id WHERE messages.user_id = {} ORDER BY messages.created_at DESC".format(user_id)
+    get_messages = "SELECT messages.messageid, messages.message, messages.created_at, users.userid, users.first_name, users.last_name FROM messages LEFT JOIN users on messages.user_id = users.userid WHERE messages.user_id = {} ORDER BY messages.created_at DESC".format(user_id)
     get_messages_data = {
         'users.id': user_id
     }
@@ -139,7 +176,7 @@ def get_messages_by_user():
 
 def get_comments_by_user():
     user_id = session['user_id']
-    get_comments = "SELECT comments.id, comments.comment, comments.message_id, messages.id, comments.created_at, users.id,users.first_name, users.last_name FROM comments LEFT JOIN messages on comments.message_id = messages.id LEFT JOIN users on users.id = comments.user_id WHERE messages.id = comments.message_id ORDER BY comments.created_at ASC"
+    get_comments = "SELECT comments.comment, comments.message_id, messages.messageid, comments.created_at, users.userid, users.first_name, users.last_name FROM comments LEFT JOIN messages on comments.message_id = messages.messageid LEFT JOIN users on users.userid = comments.users_userid WHERE messages.messageid = comments.message_id ORDER BY comments.created_at ASC"
     comments = mysql.query_db(get_comments)
     print comments
     return comments

@@ -38,9 +38,10 @@
                     <textarea rows="4" cols="50" name="message"></textarea>
                     <input type="submit" class="btn btn-primary" />
                 </form>
-                {% for messages in messages %}
-                <div class="col-md-10 text-center">
+
+
                 <table style="width:100%" class="table table-bordered text-left">
+
                     <thead>
                         <tr>
                             <th>Message Date</th>
@@ -48,28 +49,42 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {% for messages in messages %}
                         <tr>
                             <th>Message date {{messages.created_at}} {{messages.first_name}} {{messages.last_name}}</th>
                             <th>{{messages.message}}</th>
                         </tr>
-                        {% set x = 0 %}
-                            {% for comments in comments %}
-                                {% if comments['id'] != x %}
-                            <tr>
-                                <th>Message date {{comments.created_at}} {{comments.first_name}} {{comments.last_name}}</th>
-                                <th>{{comments.comment}}</th>
-                            </tr>
-                            {% endif %} {% endfor %} {% endfor %}
                     </tbody>
                 </table>
+                <table style="width:100%" class="table table-bordered text-left">
+                <tbody>
+                    {% for comments in comments %}{% if messages.messageid == comments.message_id  %}
 
-            </div>
+
+                            <tr>
+                                <td>Message date {{comments.created_at}} {{comments.first_name}} {{comments.last_name}}</td>
+                                <td>{{comments.comment}}</td>
+                            </tr>
+
+                    </tbody>{% endif %}{% endfor %}
+                    <form class="edit_comment" action="/insert/comment/{{messages.messageid}}" method="POST">
+                        <input type="hidden" name="message_id" value="{{messages.messageid}}" />
+                        <input type="text" name="comment" />
+                        <input type="submit" class="btn btn-primary" />
+                    </form>
+                    <!-- <a href="/delete/message/{{messages.messageid}}"><button class="btn btn-primary">Enter a comment</button></a> -->
+                    {% endfor %}
+                </table>
+                <h3>Wall Friends</h3>
+                {% for users in users %}
+                    <a href = "/wall/{{users.userid}}">{{users.first_name}} {{users.last_name}}</a>
+                {% endfor %}
+
+
         </div>
-
 
     </div>
 </div>
 
 </body>
-
 </html>
